@@ -1,22 +1,35 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import GlowCard from '../components/ui/GlowCard';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import GlowCard from "../components/ui/GlowCard";
+import { useAuthStore } from "../stores/authStore";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const { login, error, clearError } = useAuthStore();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLocalError(null);
+    clearError();
 
-    // TODO: Implement actual login logic with backend
-    setTimeout(() => {
-      console.log('Login:', { email, password });
+    try {
+      await login({ email, password });
+      // On success, navigate to dashboard (or home)
+      navigate("/dashboard");
+    } catch (error: any) {
+      setLocalError(
+        error.response?.data?.message || "Login failed. Please try again.",
+      );
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -38,15 +51,15 @@ export default function Login() {
             <motion.div
               animate={{
                 boxShadow: [
-                  '0 0 20px rgba(0, 240, 255, 0.3)',
-                  '0 0 40px rgba(0, 240, 255, 0.6)',
-                  '0 0 20px rgba(0, 240, 255, 0.3)',
+                  "0 0 20px rgba(0, 240, 255, 0.3)",
+                  "0 0 40px rgba(0, 240, 255, 0.6)",
+                  "0 0 20px rgba(0, 240, 255, 0.3)",
                 ],
               }}
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: 'easeInOut',
+                ease: "easeInOut",
               }}
               className="w-24 h-24 mx-auto bg-gradient-to-br from-neon-blue to-primary-600 rounded-2xl flex items-center justify-center text-5xl border-2 border-neon-blue/50"
             >
@@ -78,6 +91,19 @@ export default function Login() {
                   Access the leveling system
                 </p>
               </div>
+
+              {/* Error Message */}
+              {(localError || error) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-red-500/10 border border-red-500/50 rounded-lg p-3"
+                >
+                  <p className="text-red-400 text-sm text-center">
+                    {localError || error}
+                  </p>
+                </motion.div>
+              )}
 
               {/* Login Form */}
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -135,13 +161,54 @@ export default function Login() {
                       </svg>
                     </div>
                     <input
-                      type="password"
+                      type={showPassword ? "password" : "text"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       required
-                      className="input-glow pl-12"
+                      className="input-glow pl-12 pr-12"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-neon-blue transition-colors"
+                    >
+                      {showPassword ? (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                          />
+                        </svg>
+                      )}
+                    </button>
                   </div>
                 </div>
 
@@ -212,7 +279,7 @@ export default function Login() {
               {/* Register Link */}
               <div className="text-center">
                 <p className="text-gray-400 text-sm">
-                  Not a registered hunter yet?{' '}
+                  Not a registered hunter yet?{" "}
                   <Link
                     to="/register"
                     className="text-neon-blue hover:text-neon-cyan font-gaming font-semibold transition-colors"

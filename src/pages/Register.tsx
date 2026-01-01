@@ -1,17 +1,23 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import GlowCard from '../components/ui/GlowCard';
-import RankBadge from '../components/ui/RankBadge';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import GlowCard from "../components/ui/GlowCard";
+import RankBadge from "../components/ui/RankBadge";
+import { useAuthStore } from "../stores/authStore";
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { register, error, clearError } = useAuthStore();
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -23,12 +29,39 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLocalError(null);
+    clearError();
 
-    // TODO: Implement actual registration logic with backend
-    setTimeout(() => {
-      console.log('Register:', formData);
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setLocalError("Passwords do not match");
       setIsLoading(false);
-    }, 1500);
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      setLocalError("Password must be at least 6 characters");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        name: formData.username,
+      });
+      // On success, navigate to dashboard
+      navigate("/dashboard");
+    } catch (error: any) {
+      setLocalError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -50,15 +83,15 @@ export default function Register() {
             <motion.div
               animate={{
                 boxShadow: [
-                  '0 0 20px rgba(177, 156, 217, 0.3)',
-                  '0 0 40px rgba(177, 156, 217, 0.6)',
-                  '0 0 20px rgba(177, 156, 217, 0.3)',
+                  "0 0 20px rgba(177, 156, 217, 0.3)",
+                  "0 0 40px rgba(177, 156, 217, 0.6)",
+                  "0 0 20px rgba(177, 156, 217, 0.3)",
                 ],
               }}
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: 'easeInOut',
+                ease: "easeInOut",
               }}
               className="w-24 h-24 mx-auto bg-gradient-to-br from-neon-purple to-neon-pink rounded-2xl flex items-center justify-center text-5xl border-2 border-neon-purple/50"
             >
@@ -90,6 +123,19 @@ export default function Register() {
                   Starting Rank: <RankBadge rank="E" size="sm" />
                 </p>
               </div>
+
+              {/* Error Message */}
+              {(localError || error) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-red-500/10 border border-red-500/50 rounded-lg p-3"
+                >
+                  <p className="text-red-400 text-sm text-center">
+                    {localError || error}
+                  </p>
+                </motion.div>
+              )}
 
               {/* Register Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -181,14 +227,55 @@ export default function Register() {
                       </svg>
                     </div>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="••••••••"
                       required
-                      className="input-glow pl-12"
+                      className="input-glow pl-12 pr-12"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-neon-blue transition-colors"
+                    >
+                      {showPassword ? (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                          />
+                        </svg>
+                      )}
+                    </button>
                   </div>
                 </div>
 
@@ -214,7 +301,7 @@ export default function Register() {
                       </svg>
                     </div>
                     <input
-                      type="password"
+                      type={showConfirmPassword ? "password" : "text"}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
@@ -222,6 +309,49 @@ export default function Register() {
                       required
                       className="input-glow pl-12"
                     />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-neon-blue transition-colors"
+                    >
+                      {showConfirmPassword ? (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                          />
+                        </svg>
+                      )}
+                    </button>
                   </div>
                 </div>
 
@@ -233,11 +363,11 @@ export default function Register() {
                     className="mt-1 w-4 h-4 bg-dark-700 border-2 border-dark-500 rounded focus:ring-2 focus:ring-neon-blue checked:bg-neon-blue checked:border-neon-blue transition-all"
                   />
                   <label className="text-xs text-gray-400">
-                    I agree to the{' '}
+                    I agree to the{" "}
                     <a href="#" className="text-neon-blue hover:text-neon-cyan">
                       Hunter Association Terms
-                    </a>{' '}
-                    and{' '}
+                    </a>{" "}
+                    and{" "}
                     <a href="#" className="text-neon-blue hover:text-neon-cyan">
                       System Guidelines
                     </a>
@@ -280,7 +410,7 @@ export default function Register() {
               {/* Login Link */}
               <div className="text-center">
                 <p className="text-gray-400 text-sm">
-                  Already registered?{' '}
+                  Already registered?{" "}
                   <Link
                     to="/login"
                     className="text-neon-blue hover:text-neon-cyan font-gaming font-semibold transition-colors"
