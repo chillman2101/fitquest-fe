@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-dark-900 text-white font-sans antialiased;
+    background-image:
+      linear-gradient(to right, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neon-blue/30 rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neon-blue/50;
+  }
+}
+
+@layer components {
+  /* Glow Button */
+  .btn-glow {
+    @apply relative px-6 py-3 bg-gradient-to-r from-neon-blue/20 to-primary-600/20
+           border border-neon-blue/50 rounded-lg font-gaming font-semibold
+           text-neon-blue transition-all duration-300 overflow-hidden
+           hover:shadow-glow hover:border-neon-blue active:scale-95;
+  }
+
+  .btn-glow::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-neon-blue/10 to-transparent
+           translate-x-[-100%] transition-transform duration-500;
+  }
+
+  .btn-glow:hover::before {
+    @apply translate-x-[100%];
+  }
+
+  /* Rank Badge Base */
+  .rank-badge {
+    @apply inline-flex items-center justify-center px-4 py-1.5 rounded-md
+           font-gaming font-bold text-sm tracking-wider
+           border-2 transition-all duration-300;
+  }
+
+  /* Stat Bar Container */
+  .stat-bar-container {
+    @apply relative w-full h-6 bg-dark-700 rounded-full overflow-hidden
+           border border-dark-500;
+  }
+
+  .stat-bar-fill {
+    @apply h-full rounded-full transition-all duration-500 ease-out
+           relative overflow-hidden;
+  }
+
+  .stat-bar-fill::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent
+           animate-pulse;
+  }
+
+  /* Card Glow Effect */
+  .card-glow {
+    @apply relative bg-dark-800 rounded-xl border border-dark-600
+           transition-all duration-300;
+  }
+
+  .card-glow::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300
+           bg-gradient-to-br from-neon-blue/10 to-transparent;
+  }
+
+  .card-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  .card-glow:hover {
+    @apply border-neon-blue/50 shadow-glow;
+  }
+
+  /* Quest Card */
+  .quest-card {
+    @apply card-glow p-6 cursor-pointer;
+  }
+
+  /* Dungeon Card */
+  .dungeon-card {
+    @apply card-glow p-6 cursor-pointer relative overflow-hidden;
+  }
+
+  .dungeon-card::after {
+    content: '';
+    @apply absolute -bottom-2 -right-2 w-24 h-24 bg-neon-blue/5 rounded-full blur-xl;
+  }
+
+  /* Text Glow */
+  .text-glow {
+    @apply text-shadow-[0_0_10px_rgba(0,240,255,0.5)];
+  }
+
+  /* Level Badge */
+  .level-badge {
+    @apply inline-flex items-center gap-2 px-4 py-2
+           bg-gradient-to-r from-neon-blue/20 to-primary-600/20
+           border-2 border-neon-blue rounded-lg font-gaming font-bold
+           shadow-glow;
+  }
+
+  /* HP/Stamina Bar */
+  .status-bar {
+    @apply flex items-center gap-3 px-4 py-2 bg-dark-700/50 rounded-lg
+           border border-dark-600;
+  }
+
+  /* Input Field */
+  .input-glow {
+    @apply w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg
+           text-white placeholder-gray-500 font-sans
+           focus:outline-none focus:border-neon-blue focus:shadow-glow
+           transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  .text-shadow-glow {
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  }
+
+  .border-gradient {
+    border-image: linear-gradient(to right, rgba(0, 240, 255, 0.5), rgba(59, 130, 246, 0.5)) 1;
+  }
+}
