@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useAuthStore } from '../stores/authStore';
-import GlowCard from '../components/ui/GlowCard';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useAuthStore } from "../stores/authStore";
+import GlowCard from "../components/ui/GlowCard";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -10,13 +10,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   if (!user) {
@@ -55,7 +55,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <GlowCard variant="primary">
+            <GlowCard variant="primary" onClick={() => navigate("/profile")}>
               <div className="space-y-4">
                 <div className="flex items-center gap-3 border-b border-dark-600 pb-3">
                   <div className="w-16 h-16 bg-gradient-to-br from-neon-blue to-primary-600 rounded-lg flex items-center justify-center text-3xl">
@@ -71,24 +71,24 @@ export default function Dashboard() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Age:</span>
-                    <span className="text-white">{user.age || 'Not set'}</span>
+                    <span className="text-white">{user.age || "Not set"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Gender:</span>
                     <span className="text-white capitalize">
-                      {user.gender || 'Not set'}
+                      {user.gender || "Not set"}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Height:</span>
                     <span className="text-white">
-                      {user.height ? `${user.height} cm` : 'Not set'}
+                      {user.height ? `${user.height} cm` : "Not set"}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Weight:</span>
                     <span className="text-white">
-                      {user.weight ? `${user.weight} kg` : 'Not set'}
+                      {user.weight ? `${user.weight} kg` : "Not set"}
                     </span>
                   </div>
                 </div>
@@ -109,7 +109,7 @@ export default function Dashboard() {
                 <div className="text-center py-8">
                   <p className="text-3xl mb-2">🎯</p>
                   <p className="text-neon-cyan font-gaming uppercase">
-                    {user.fitness_goal?.replace('_', ' ') || 'Not set'}
+                    {user.fitness_goal?.replace("_", " ") || "Not set"}
                   </p>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default function Dashboard() {
                 <div className="text-center py-8">
                   <p className="text-3xl mb-2">⚡</p>
                   <p className="text-yellow-400 font-gaming uppercase">
-                    {user.activity_level?.replace('_', ' ') || 'Not set'}
+                    {user.activity_level?.replace("_", " ") || "Not set"}
                   </p>
                 </div>
               </div>

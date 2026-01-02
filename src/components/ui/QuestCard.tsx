@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import RankBadge, { Rank } from './RankBadge';
+import { motion } from "framer-motion";
+import RankBadge, { Rank } from "./RankBadge";
 
 export interface Quest {
   id: string;
@@ -8,8 +8,8 @@ export interface Quest {
   rank: Rank;
   xpReward: number;
   coinReward?: number;
-  type: 'daily' | 'weekly' | 'special';
-  difficulty: 'easy' | 'medium' | 'hard' | 'extreme';
+  type: "daily" | "weekly" | "special";
+  difficulty: "easy" | "medium" | "hard" | "extreme";
   progress?: number;
   total?: number;
   timeLimit?: string;
@@ -24,34 +24,37 @@ interface QuestCardProps {
 
 const typeStyles = {
   daily: {
-    border: 'border-neon-cyan/30',
-    badge: 'bg-neon-cyan/10 text-neon-cyan border-neon-cyan',
-    icon: '🌅',
+    border: "border-neon-cyan/30",
+    badge: "bg-neon-cyan/10 text-neon-cyan border-neon-cyan",
+    icon: "🌅",
   },
   weekly: {
-    border: 'border-neon-purple/30',
-    badge: 'bg-neon-purple/10 text-neon-purple border-neon-purple',
-    icon: '🗓️',
+    border: "border-neon-purple/30",
+    badge: "bg-neon-purple/10 text-neon-purple border-neon-purple",
+    icon: "🗓️",
   },
   special: {
-    border: 'border-rank-S/30',
-    badge: 'bg-rank-S/10 text-rank-S border-rank-S',
-    icon: '⭐',
+    border: "border-rank-S/30",
+    badge: "bg-rank-S/10 text-rank-S border-rank-S",
+    icon: "⭐",
   },
 };
 
 const difficultyColors = {
-  easy: 'text-rank-D',
-  medium: 'text-rank-C',
-  hard: 'text-rank-A',
-  extreme: 'text-rank-S',
+  easy: "text-rank-D",
+  medium: "text-rank-C",
+  hard: "text-rank-A",
+  extreme: "text-rank-S",
 };
 
-export default function QuestCard({ quest, onClick, showProgress = true }: QuestCardProps) {
+export default function QuestCard({
+  quest,
+  onClick,
+  showProgress = true,
+}: QuestCardProps) {
   const typeStyle = typeStyles[quest.type];
-  const progressPercentage = quest.progress && quest.total
-    ? (quest.progress / quest.total) * 100
-    : 0;
+  const progressPercentage =
+    quest.progress && quest.total ? (quest.progress / quest.total) * 100 : 0;
 
   return (
     <motion.div
@@ -63,7 +66,7 @@ export default function QuestCard({ quest, onClick, showProgress = true }: Quest
       className={`
         relative quest-card group
         border-2 ${typeStyle.border}
-        ${quest.isCompleted ? 'opacity-60' : ''}
+        ${quest.isCompleted ? "opacity-60" : ""}
       `}
     >
       {/* Completed Overlay */}
@@ -73,7 +76,7 @@ export default function QuestCard({ quest, onClick, showProgress = true }: Quest
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 200 }}
+              transition={{ type: "spring", stiffness: 200 }}
               className="text-6xl mb-2"
             >
               ✓
@@ -107,32 +110,40 @@ export default function QuestCard({ quest, onClick, showProgress = true }: Quest
       </p>
 
       {/* Progress Bar */}
-      {showProgress && quest.progress !== undefined && quest.total !== undefined && (
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-gaming text-gray-400">PROGRESS</span>
-            <span className="text-xs font-mono text-neon-blue">
-              {quest.progress} / {quest.total}
-            </span>
+      {showProgress &&
+        quest.progress !== undefined &&
+        quest.total !== undefined && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-gaming text-gray-400">
+                PROGRESS
+              </span>
+              <span className="text-xs font-mono text-neon-blue">
+                {quest.progress} / {quest.total}
+              </span>
+            </div>
+            <div className="relative w-full h-2 bg-dark-700 rounded-full overflow-hidden border border-dark-500">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercentage}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="h-full bg-gradient-to-r from-neon-blue to-primary-600 rounded-full"
+              />
+            </div>
           </div>
-          <div className="relative w-full h-2 bg-dark-700 rounded-full overflow-hidden border border-dark-500">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 1, ease: 'easeOut' }}
-              className="h-full bg-gradient-to-r from-neon-blue to-primary-600 rounded-full"
-            />
-          </div>
-        </div>
-      )}
+        )}
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-dark-600">
         {/* Difficulty & Time Limit */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
-            <span className="text-xs font-gaming text-gray-500">DIFFICULTY:</span>
-            <span className={`text-xs font-gaming font-bold uppercase ${difficultyColors[quest.difficulty]}`}>
+            <span className="text-xs font-gaming text-gray-500">
+              DIFFICULTY:
+            </span>
+            <span
+              className={`text-xs font-gaming font-bold uppercase ${difficultyColors[quest.difficulty]}`}
+            >
               {quest.difficulty}
             </span>
           </div>
@@ -180,11 +191,11 @@ export default function QuestCard({ quest, onClick, showProgress = true }: Quest
         className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
           background: `radial-gradient(circle at 50% 50%, ${
-            quest.type === 'daily'
-              ? 'rgba(0, 255, 255, 0.05)'
-              : quest.type === 'weekly'
-              ? 'rgba(177, 156, 217, 0.05)'
-              : 'rgba(239, 68, 68, 0.05)'
+            quest.type === "daily"
+              ? "rgba(0, 255, 255, 0.05)"
+              : quest.type === "weekly"
+                ? "rgba(177, 156, 217, 0.05)"
+                : "rgba(239, 68, 68, 0.05)"
           }, transparent 70%)`,
         }}
       />
@@ -193,7 +204,10 @@ export default function QuestCard({ quest, onClick, showProgress = true }: Quest
 }
 
 // Quest List Component
-export function QuestList({ quests, onQuestClick }: {
+export function QuestList({
+  quests,
+  onQuestClick,
+}: {
   quests: Quest[];
   onQuestClick?: (quest: Quest) => void;
 }) {
